@@ -47,9 +47,19 @@ namespace WavFormatCSharp
             string forwardsWavFilePath = @"90.wav";
             byte[] forwardsWavFileStreamByteArray = PopulateForwardsWavFileByteArray(forwardsWavFilePath);
 
-             }
+            byte[] forwardsArrayWithOnlyHeaders = CreateForwardsArrayWithOnlyHeaders(forwardsWavFileStreamByteArray, Constants.StartIndexOfAudioDataChunk);
+            }
 
-        
+       
+        private static byte[] CreateForwardsArrayWithOnlyHeaders(byte[] forwardsWavFileStreamByteArray, int startIndexOfDataChunk)
+        {
+            byte[] forwardsArrayWithOnlyHeaders = new byte[startIndexOfDataChunk];
+          
+           
+            Array.Copy(forwardsWavFileStreamByteArray, 0, forwardsArrayWithOnlyHeaders, 0, startIndexOfDataChunk);
+           
+            return forwardsArrayWithOnlyHeaders;
+        }
 
         private static byte[] PopulateForwardsWavFileByteArray(string forwardsWavFilePath)
         {
