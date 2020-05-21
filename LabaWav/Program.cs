@@ -7,7 +7,18 @@ namespace WavFormatCSharp
 {
     internal static class Metadata
     {
-        
+        internal static ushort GetBitsPerSample(byte[] forwardsWavFileStreamByteArray)
+        {
+            byte[] bitsPerSampleByteArray = GetRelevantBytesIntoNewArray(forwardsWavFileStreamByteArray, Constants.BitsPerSampleStartIndex, Constants.BitsPerSampleEndIndex);
+            ushort bitsPerSample = BitConverter.ToUInt16(bitsPerSampleByteArray, 0);
+            byte[] SubchunksizeByteArray = GetRelevantBytesIntoNewArray(forwardsWavFileStreamByteArray, 4, 7);
+            UInt32 Subchunksize = BitConverter.ToUInt32(SubchunksizeByteArray, 0);
+            
+            Console.WriteLine("Subchunk2size = {0}", Subchunksize);
+
+            Console.WriteLine("Bits Per Sample = {0}", bitsPerSample);
+            return bitsPerSample;
+        }
         private static byte[] GetRelevantBytesIntoNewArray(byte[] forwardsWavFileStreamByteArray, int startIndex, int endIndex)
         {
             int length = endIndex - startIndex + 1;
