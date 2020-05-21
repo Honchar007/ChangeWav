@@ -1,0 +1,7 @@
+D:\Labs\ChangeWav\LabaWav\bin\Debug\LabaWav.exe.config
+D:\Labs\ChangeWav\LabaWav\bin\Debug\LabaWav.exe
+D:\Labs\ChangeWav\LabaWav\bin\Debug\LabaWav.pdb
+D:\Labs\ChangeWav\LabaWav\obj\Debug\LabaWav.csprojAssemblyReference.cache
+D:\Labs\ChangeWav\LabaWav\obj\Debug\LabaWav.csproj.CoreCompileInputs.cache
+D:\Labs\ChangeWav\LabaWav\obj\Debug\LabaWav.exe
+D:\Labs\ChangeWav\LabaWav\obj\Debug\LabaWav.pdb
