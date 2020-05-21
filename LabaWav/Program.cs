@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace WavFormatCSharp
 {
-    internal static class MetadataGatherer
+    internal static class Metadata
     {
         internal static ushort GetBitsPerSample(byte[] forwardsWavFileStreamByteArray)
         {
@@ -40,7 +40,7 @@ namespace WavFormatCSharp
         internal const int BitsPerByte = 8;
     }
 
-    internal static class Reverser
+    internal static class ChangeWaver
     {
         public static void Start()
         {
@@ -50,9 +50,24 @@ namespace WavFormatCSharp
             byte[] forwardsArrayWithOnlyHeaders = CreateForwardsArrayWithOnlyHeaders(forwardsWavFileStreamByteArray, Constants.StartIndexOfAudioDataChunk);
             byte[] forwardsArrayWithOnlyAudioData = CreateForwardsArrayWithOnlyAudioData(forwardsWavFileStreamByteArray, Constants.StartIndexOfAudioDataChunk);
 
-              }
+            int bytesPerSample = Metadata.GetBitsPerSample(forwardsWavFileStreamByteArray) / Constants.BitsPerByte;
+            byte[] reversedArrayWithOnlyAudioData = TheForwardsArrayWithOnlyAudioData(bytesPerSample, forwardsArrayWithOnlyAudioData); // изменять дата тут добавить число на которое изменить и там разобраться
+            
+        }
 
         
+
+        private static byte[] TheForwardsArrayWithOnlyAudioData(int bytesPerSample, byte[] forwardsArrayWithOnlyAudioData)
+        {
+            int length = forwardsArrayWithOnlyAudioData.Length;
+            byte[] reversedArrayWithOnlyAudioData = new byte[length*2];
+            
+            forwardsArrayWithOnlyAudioData.CopyTo(reversedArrayWithOnlyAudioData, 0);
+            int x = forwardsArrayWithOnlyAudioData.Length-1;
+            //forwardsArrayWithOnlyAudioData.CopyTo(reversedArrayWithOnlyAudioData, x);
+
+            return reversedArrayWithOnlyAudioData;
+        }
 
         private static byte[] CreateForwardsArrayWithOnlyAudioData(byte[] forwardsWavFileStreamByteArray, int startIndexOfDataChunk)
         {
