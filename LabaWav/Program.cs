@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace WavFormatCSharp
 {
-    internal static class Metadata
+    internal static class MetadataGatherer
     {
         internal static ushort GetBitsPerSample(byte[] forwardsWavFileStreamByteArray)
         {
@@ -40,7 +40,7 @@ namespace WavFormatCSharp
         internal const int BitsPerByte = 8;
     }
 
-    internal static class ChangeWaver
+    internal static class Reverser
     {
         public static void Start()
         {
@@ -48,9 +48,19 @@ namespace WavFormatCSharp
             byte[] forwardsWavFileStreamByteArray = PopulateForwardsWavFileByteArray(forwardsWavFilePath);
 
             byte[] forwardsArrayWithOnlyHeaders = CreateForwardsArrayWithOnlyHeaders(forwardsWavFileStreamByteArray, Constants.StartIndexOfAudioDataChunk);
-            }
+            byte[] forwardsArrayWithOnlyAudioData = CreateForwardsArrayWithOnlyAudioData(forwardsWavFileStreamByteArray, Constants.StartIndexOfAudioDataChunk);
 
-       
+              }
+
+        
+
+        private static byte[] CreateForwardsArrayWithOnlyAudioData(byte[] forwardsWavFileStreamByteArray, int startIndexOfDataChunk)
+        {
+            byte[] forwardsArrayWithOnlyAudioData = new byte[forwardsWavFileStreamByteArray.Length - startIndexOfDataChunk];
+            Array.Copy(forwardsWavFileStreamByteArray, startIndexOfDataChunk, forwardsArrayWithOnlyAudioData, 0, forwardsWavFileStreamByteArray.Length - startIndexOfDataChunk);
+            return forwardsArrayWithOnlyAudioData;
+        }
+
         private static byte[] CreateForwardsArrayWithOnlyHeaders(byte[] forwardsWavFileStreamByteArray, int startIndexOfDataChunk)
         {
             byte[] forwardsArrayWithOnlyHeaders = new byte[startIndexOfDataChunk];
@@ -79,7 +89,7 @@ namespace WavFormatCSharp
         
         static void Main(string[] args)
         {
-            ChangeWaver.Start();
+            Reverser.Start();
            
             Console.ReadLine();
         
