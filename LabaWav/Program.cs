@@ -44,6 +44,8 @@ namespace WavFormatCSharp
     {
         public static void Start()
         {
+            Console.WriteLine("Во сколько раз вы хотите сделать файл больше");
+            int n = int.Parse(Console.ReadLine());
             string forwardsWavFilePath = @"90.wav";
             byte[] forwardsWavFileStreamByteArray = PopulateForwardsWavFileByteArray(forwardsWavFilePath);
 
@@ -51,15 +53,15 @@ namespace WavFormatCSharp
             byte[] forwardsArrayWithOnlyAudioData = CreateForwardsArrayWithOnlyAudioData(forwardsWavFileStreamByteArray, Constants.StartIndexOfAudioDataChunk);
 
             int bytesPerSample = Metadata.GetBitsPerSample(forwardsWavFileStreamByteArray) / Constants.BitsPerByte;
-            byte[] ArrayWithOnlyAudioData = TheForwardsArrayWithOnlyAudioData(bytesPerSample, forwardsArrayWithOnlyAudioData); // изменять дата тут добавить число на которое изменить и там разобраться
+            byte[] ArrayWithOnlyAudioData = TheForwardsArrayWithOnlyAudioData(bytesPerSample, forwardsArrayWithOnlyAudioData, n); // изменять дата тут добавить число на которое изменить и там разобраться
             byte[] WavFileStreamByteArray = CombineArrays(forwardsArrayWithOnlyHeaders, ArrayWithOnlyAudioData);
 
             string WavFilePath = @"File.wav";
 
-            WriteReversedWavFileByteArrayToFile(WavFileStreamByteArray, WavFilePath);
+            WriteWavFileByteArrayToFile(WavFileStreamByteArray, WavFilePath);
         }
 
-        private static void WriteReversedWavFileByteArrayToFile(byte[] WavFileStreamByteArray, string WavFilePath)
+        private static void WriteWavFileByteArrayToFile(byte[] WavFileStreamByteArray, string WavFilePath)
         {
             using (FileStream FileStream = new FileStream(WavFilePath, FileMode.Create, FileAccess.Write, FileShare.Write))
             {
@@ -75,17 +77,27 @@ namespace WavFormatCSharp
             return WavFileStreamByteArray;
         }
 
-            private static byte[] TheForwardsArrayWithOnlyAudioData(int bytesPerSample, byte[] forwardsArrayWithOnlyAudioData)
+            private static byte[] TheForwardsArrayWithOnlyAudioData(int bytesPerSample, byte[] forwardsArrayWithOnlyAudioData, int n)
         {
             int length = forwardsArrayWithOnlyAudioData.Length;
-            byte[] ArrayWithOnlyAudioData = new byte[length*2];
-            
-            forwardsArrayWithOnlyAudioData.CopyTo(ArrayWithOnlyAudioData, 0);
-            int x = forwardsArrayWithOnlyAudioData.Length-1;
-            //forwardsArrayWithOnlyAudioData.CopyTo(ArrayWithOnlyAudioData, x);
-
+            byte[] ArrayWithOnlyAudioData = null;
+            if (n > 1)
+            {
+                ArrayWithOnlyAudioData = new byte[length * n];
+                forwardsArrayWithOnlyAudioData.CopyTo(ArrayWithOnlyAudioData, 0);
+                int count = n;
+                for (int i = 0; i <n; i++)
+                {
+                    int x = forwardsArrayWithOnlyAudioData.Length / count - 1;
+                    forwardsArrayWithOnlyAudioData.CopyTo(ArrayWithOnlyAudioData, x);
+                    count--;
+                }
+            }
+            else return forwardsArrayWithOnlyAudioData;
+           
             return ArrayWithOnlyAudioData;
         }
+
 
         private static byte[] CreateForwardsArrayWithOnlyAudioData(byte[] forwardsWavFileStreamByteArray, int startIndexOfDataChunk)
         {
@@ -97,10 +109,52 @@ namespace WavFormatCSharp
         private static byte[] CreateForwardsArrayWithOnlyHeaders(byte[] forwardsWavFileStreamByteArray, int startIndexOfDataChunk)
         {
             byte[] forwardsArrayWithOnlyHeaders = new byte[startIndexOfDataChunk];
-          
-           
+
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(forwardsArrayWithOnlyHeaders);
+
             Array.Copy(forwardsWavFileStreamByteArray, 0, forwardsArrayWithOnlyHeaders, 0, startIndexOfDataChunk);
-           
+           /* for (int i = 4; i < 8; i++)
+            {
+                Console.WriteLine(forwardsArrayWithOnlyHeaders[i]);
+            }*/
+            byte[] b = new byte[4];
+            b[0] = forwardsArrayWithOnlyHeaders[4];
+            b[1] = forwardsArrayWithOnlyHeaders[5];
+            b[2] = forwardsArrayWithOnlyHeaders[6];
+            b[3] = forwardsArrayWithOnlyHeaders[7];
+
+
+            int j = BitConverter.ToInt32(b,0)*2;
+            
+                Console.WriteLine("int: {0}", j);
+            b = BitConverter.GetBytes(j);
+            Array.Copy(b,0,forwardsArrayWithOnlyHeaders,4,4);
+           /* for (int i = 4; i < 8; i++)
+            {
+                Console.WriteLine(forwardsArrayWithOnlyHeaders[i]);
+            }*/
+
+            for (int i = 40; i < 44; i++)
+            {
+                Console.WriteLine(forwardsArrayWithOnlyHeaders[i]);
+            }
+            b = new byte[4];
+            b[0] = forwardsArrayWithOnlyHeaders[40];
+            b[1] = forwardsArrayWithOnlyHeaders[41];
+            b[2] = forwardsArrayWithOnlyHeaders[42];
+            b[3] = forwardsArrayWithOnlyHeaders[43];
+
+            UInt32 k = BitConverter.ToUInt32(b, 0)*2;
+            Console.WriteLine("int: {0}", k);
+
+            b = BitConverter.GetBytes(k);
+            Array.Copy(b, 0, forwardsArrayWithOnlyHeaders,40, 4);
+            for (int i = 40; i < 44; i++)
+            {
+                Console.WriteLine(forwardsArrayWithOnlyHeaders[i]);
+            }
+
             return forwardsArrayWithOnlyHeaders;
         }
 
@@ -122,10 +176,12 @@ namespace WavFormatCSharp
         
         static void Main(string[] args)
         {
+            
             ChangeWaver.Start();
            
             Console.ReadLine();
         
         }
+        
     }
 }
